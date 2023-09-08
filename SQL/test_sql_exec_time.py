@@ -24,16 +24,31 @@ arr_string=[
     "SELECT * FROM games WHERE competition_id ='IT1';", #q3
     "select p.player_id ,p.name,count(a.player_id) as TotalGames  from players p,appearances a where p.player_id = a.player_id group by p.player_id order by TotalGames desc",#q4
     "select p.name ,p.position, sum(a.goals) as GoalInCareer from players p , appearances a where p.player_id = a.player_id group by p.player_id;",#q5
-    "select p.name ,p.position, sum(a.goals) as GoalInCareer from players p , appearances a where p.player_id = a.player_id group by p.player_id;", #q6
-    "select p.name,c.name from clubs c , players p,appearances a where c.club_id  = 131 and c.club_id = a.player_club_id and a.player_id= p.player_id group by p.player_id", #q7
-    "select p.name,p.position, count(a.red_cards) as RED_CARDS   from players p , appearances a where a.player_id = p.player_id and p.position = 'Defender' group by p.player_id",#q8
-    "select c.name , count(p.partecipation_id) as UCL_Games from clubs c,partecipation p ,games g, competitions c2  where c.club_id = p.club_id and p.game_id = g.game_id and g.competition_id = c2.competition_id and c2.name = 'uefa-champions-league' group by c.club_id", #q9
-    "select p.name, count(a.appearance_id) as UFC_appearences from players p , appearances a ,games g ,competitions c where  p.last_name = 'Messi' and p.player_id = a.player_id  and a.game_id = g.game_id and g.competition_id = c.competition_id and c.name = 'uefa-champions-league'",#q10
-    "select p.name, c2.name, count(a.appearance_id) as UFC_appearences from players p , appearances a ,games g ,competitions c , clubs c2 where p.player_id = a.player_id  and a.game_id = g.game_id  and g.competition_id = c.competition_id and c.name = 'uefa-champions-league' and a.player_club_id = c2.club_id group by p.player_id,c2.club_id order by p.name ASC ,UFC_appearences desc", #q11
-    "SELECT p.name AS player_name, p.date_of_birth AS dateOfBirth,SUM(CAST(a.minutes_played AS INT)) AS Minutes_played,SUM(CAST(a.goals AS INT)) AS Goal_scored FROM players p JOIN appearances a ON p.player_id = a.player_id JOIN games g ON a.game_id = g.game_id WHERE DATEDIFF(g.date,p.date_of_birth) <= 8035 AND p.position <> 'Goalkeeper' GROUP BY p.name, p.date_of_birth ORDER BY Goal_scored desc LIMIT 10;", #q12
-    "select Player_name, GoalInComp,Competition_Name from(select p.name as Player_name, sum(a.goals) as GoalInComp, c.name as Competition_Name, row_number() over (partition by c.competition_id order by GoalInComp DESC) as Test from players p, appearances a ,games g ,competitions c  where p.player_id = a.player_id and a.game_id = g.game_id and g.competition_id = c.competition_id and (c.name = 'laliga' or c.name = 'serie-a' or c.name='premier-league' or c.name='ligue-1' or c.name='bundesliga') group by  c.competition_id, p.player_id) t where Test = 1", #q13
-    "select Player_name, Best_Striker,Club_name from(select p.name as Player_name, sum(a.goals) as Best_Striker, c2.name as Club_name, row_number() over (partition by c2.club_id  order by Best_Striker DESC) as Test from players p, appearances a ,games g ,clubs c2  where p.player_id = a.player_id and a.game_id = g.game_id and a.player_club_id = c2.club_id group by  c2.club_id , p.player_id) t where Test = 1"
+    "select p.name,c.name from clubs c , players p,appearances a where c.club_id  = 131 and c.club_id = a.player_club_id and a.player_id= p.player_id group by p.player_id", #q6
+    "select p.name,p.position, count(a.red_cards) as RED_CARDS   from players p , appearances a where a.player_id = p.player_id and p.position = 'Defender' group by p.player_id",#q7
+    "select c.name , count(p.partecipation_id) as UCL_Games from clubs c,partecipation p ,games g, competitions c2  where c.club_id = p.club_id and p.game_id = g.game_id and g.competition_id = c2.competition_id and c2.name = 'uefa-champions-league' group by c.club_id", #q8
+    "select p.name, count(a.appearance_id) as UFC_appearences from players p , appearances a ,games g ,competitions c where  p.last_name = 'Messi' and p.player_id = a.player_id  and a.game_id = g.game_id and g.competition_id = c.competition_id and c.name = 'uefa-champions-league'",#q9
+    "select p.name, c2.name, count(a.appearance_id) as UFC_appearences from players p , appearances a ,games g ,competitions c , clubs c2 where p.player_id = a.player_id  and a.game_id = g.game_id  and g.competition_id = c.competition_id and c.name = 'uefa-champions-league' and a.player_club_id = c2.club_id group by p.player_id,c2.club_id order by p.name ASC ,UFC_appearences desc", #q10
+    "SELECT p.name AS player_name, p.date_of_birth AS dateOfBirth,SUM(CAST(a.minutes_played AS INT)) AS Minutes_played,SUM(CAST(a.goals AS INT)) AS Goal_scored FROM players p JOIN appearances a ON p.player_id = a.player_id JOIN games g ON a.game_id = g.game_id WHERE DATEDIFF(g.date,p.date_of_birth) <= 8035 AND p.position <> 'Goalkeeper' GROUP BY p.name, p.date_of_birth ORDER BY Goal_scored desc LIMIT 10;", #q11
+    "select Player_name, GoalInComp,Competition_Name from(select p.name as Player_name, sum(a.goals) as GoalInComp, c.name as Competition_Name, row_number() over (partition by c.competition_id order by GoalInComp DESC) as Test from players p, appearances a ,games g ,competitions c  where p.player_id = a.player_id and a.game_id = g.game_id and g.competition_id = c.competition_id and (c.name = 'laliga' or c.name = 'serie-a' or c.name='premier-league' or c.name='ligue-1' or c.name='bundesliga') group by  c.competition_id, p.player_id) t where Test = 1", #q12
+    "select Player_name, Best_Striker,Club_name from(select p.name as Player_name, sum(a.goals) as Best_Striker, c2.name as Club_name, row_number() over (partition by c2.club_id  order by Best_Striker DESC) as Test from players p, appearances a ,games g ,clubs c2  where p.player_id = a.player_id and a.game_id = g.game_id and a.player_club_id = c2.club_id group by  c2.club_id , p.player_id) t where Test = 1" #q13
+]
 
+captions = [
+    "For each competition, provide the total number of matches.",
+    "Retrieve all players from a specific club (FC Barcelona).",
+    "Return all matches of a specific competition (Serie A) along with clubs, date, and result.",
+    "Count the number of appearances in the history of the database for each player.",
+    "For each player, calculate the total number of goals scored in their career, along with their position.",
+    "Given a certain club ID, return all the players who have played for that club.",
+    "For every defender, report the number of red cards in their career.",
+    "Return the number of games played by each club in the UEFA Champions League.",
+    "Return the number of appearances by Messi in the UEFA Champions League.",
+    "For each player, return the number of appearances in the UEFA Champions League and the club with which they played in those matches.",
+    "Return the top 10 players who scored the most goals when they were under 21 years old.",
+    "Return all games of a specific competition (Serie A) with the game ID, home and away clubs, score, and date.",
+    "Return the top scorer for the top 5 competitions (Serie A, Bundesliga, La Liga, Ligue 1).",
+    "Return the best striker for each club."
 ]
 
 # Create an HTML file and write the HTML content
@@ -41,6 +56,9 @@ with open("sql_query_results.html", "w") as html_file:
     html_file.write("<html>")
     html_file.write("<head><title>MariaDB Query Results</title></head>")
     html_file.write("<body>")
+
+    html_file.write("<h1>MariaDB Query Results</h1>")
+
 
     counter = 0
     for query in arr_string:
@@ -50,9 +68,12 @@ with open("sql_query_results.html", "w") as html_file:
         end = time.time()
         execution_time = end - start
         result = list(cur)
+        num_records = len(result)  # Count the number of records
         counter += 1
-
-        html_file.write(f"<h2>Query {counter}:  Execution time: {execution_time:.6f} seconds</h2>")
+        
+        html_file.write(f"<h2>Query {counter}: [Execution time: {execution_time:.6f} seconds]</h2>")
+        html_file.write(f"<h2>{captions[counter-1]}</h2>")
+        html_file.write(f"<p>Number of Records: {num_records}</p>")  # Display the number of records
 
         html_file.write("<button onclick=\"toggleQueryResults(" + str(counter) + ")\">Toggle Results</button>")
         html_file.write(f"<div id=\"queryResults{counter}\" style=\"display: none;\">")

@@ -1,0 +1,134 @@
+Q1.
+/*for each competition give the total number of matches renaming the column as numberofGames*/
+
+MATCH (c:Competition)<-[:PART_OF]-(g:Game)
+RETURN c.ID AS competition_id, c.name AS competition_name, COUNT(g) AS NumberOfGames
+ORDER BY NumberOfGames DESC
+
+Q2.
+/* Retrieve all players from a specific club: FC Barcelona*/
+
+MATCH (c:Club {ID: "131"})<-[:MEMBER_OF]-(p:Player)
+RETURN c.name AS Club_name, p.name AS Player_name
+
+Q3.
+/*return all match of a specific competition: Serie A*/
+
+MATCH (c:Competition {ID: "IT1"})<-[r:PART_OF]-(g:Game)
+RETURN g, c
+
+Q4.
+/*Count the number of appearences in the history of the db for each player */
+
+MATCH (p:Player)<-[r:COLLECT]-(a:Appearance)
+RETURN p.ID as Player_id, p.name AS Player_name, COUNT(r) AS TotalGames
+order by TotalGames DESC
+
+
+Q5.
+/*for each player computes how many goals has done in career indicating its position*/
+
+MATCH (p:Player)<-[:COLLECT]-(a:Appearance)
+RETURN p.ID AS Player_ID, p.name AS player_name, p.position AS player_position,SUM(TOINTEGER(a.goals)) AS GoalInCareer
+
+Q6.
+/* given a certain club id, return all the players that have played in that club */  
+
+MATCH (c:Club)<-[:PLAYED_WITH]-(a:Appearance {player_club_id: "131"})-[:COLLECT]->(p:Player)
+RETURN distinct p.name AS player_name, c.name AS club_name 
+
+Q7.
+/* for every defender return the number of red cards in their history */
+MATCH (p:Player {position: 'Defender'})<-[:COLLECT]-(a:Appearance)
+RETURN p.ID as Player_ID, p.name AS player_name, p.position AS player_position, COUNT(a.red_cards) AS RED_CARDS
+
+Q8.
+/* return the number of games for each clubs in the champions league */
+
+MATCH (c:Club)<-[:PARTECIPATE_IN]-(p:Partecipation)-[:REFERS_TO]->(g:Game)-[:PART_OF]->(c2:Competition {name: 'uefa-champions-league'})
+RETURN c.ID, c.name AS club_name, COUNT(p.ID) AS UCL_Games order by UCL_Games DESC
+
+Q9.
+/*return the number of appearances of messi in the UFC */
+MATCH (p:Player {last_name: 'Messi'})<-[:COLLECT]-(a:Appearance)-[:APPEREAD_IN]->(g:Game)-[:PART_OF]->(c:Competition {name: 'uefa-champions-league'})
+RETURN p.name AS player_name, COUNT(a.ID) AS UFC_appearances
+
+
+Q10.
+/* for each player returns the number of appearances in UFC and the club with which they have played in that match */
+
+MATCH (p:Player)<-[:COLLECT]-(a:Appearance)-[:APPEREAD_IN]->(g:Game)-[:PART_OF]->(c:Competition {name: 'uefa-champions-league'})
+MATCH (a)-[:PLAYED_WITH]->(c2:Club)
+RETURN p.name AS player_name, c2.name AS club_name, COUNT(a.ID) AS UFC_appearances
+ORDER BY p.name ASC, UFC_appearances DESC;
+
+
+Q11.
+/*return the best 10 players that scored most goals when they was u21*/
+
+MATCH (p:Player)<-[:COLLECT]-(a:Appearance)-[:APPEREAD_IN]->(g:Game)
+WITH p, a, g,
+  a.minutes_played as minutesPlayed,
+  datetime(p.date_of_birth) as dateOfBirth,
+  datetime(g.date) as gameDate
+WITH p, a, g, minutesPlayed, dateOfBirth, gameDate,
+  duration.between(dateOfBirth, gameDate).years AS ageAtAppearance
+WHERE ageAtAppearance <=21 AND p.position <> "Goalkeeper"
+RETURN p.name AS player_name,(p.date_of_birth) as dateOfBirth, SUM(TOINTEGER(minutesPlayed)) as Minutes_played, SUM(TOINTEGER(a.goals)) as Goal_scored
+Order by Goal_scored DESC
+LIMIT 10
+
+Q12.
+/*Return all the games of a certain competition (Serie A) along with the game id, home and away club, score, and date*/
+
+MATCH (c:Competition {ID: "IT1"})<-[r:PART_OF]-(g:Game)
+MATCH (homePartecipation:Partecipation {game_id: g.ID, hosting: 'Home'})-[:PARTECIPATE_IN]->(homeClub:Club)
+MATCH (awayPartecipation:Partecipation {game_id: g.ID, hosting: 'Away'})-[:PARTECIPATE_IN]->(awayClub:Club)
+RETURN g.ID AS Game_ID, homeClub.name AS Home_Club, awayClub.name AS Away_Club, homePartecipation.own_goals +'-'+ awayPartecipation.own_goals AS Score, g.date AS Date
+ORDER BY g.date
+
+Q.13
+/*Return top scorer for top 5 competitions*/
+MATCH (competition:Competition)
+MATCH (player:Player)<-[:COLLECT]-(appearance:Appearance)-[:APPEREAD_IN]->(game:Game)-[:PART_OF]->(competition)
+WHERE competition.name IN ['serie-a', 'bundesliga', 'laliga', 'ligue-1']
+WITH competition, player, SUM(TOINTEGER(appearance.goals)) AS GoalsScored
+ORDER BY competition.name, GoalsScored DESC
+WITH competition, COLLECT({name: player.name, GoalsScored: GoalsScored})[0] AS BestStriker
+RETURN competition.name AS Competition_name, BestStriker.name AS Best_striker, BestStriker.GoalsScored AS Goal_scored
+
+
+Q.14
+/*Return best striker for each club*/
+MATCH (club:Club)
+MATCH (player:Player)<-[:COLLECT]-(appearance:Appearance)-[:APPEREAD_IN]->(:Game)
+WHERE appearance.player_club_id = club.ID
+WITH club, player, SUM(TOINTEGER(appearance.goals)) AS GoalsScored
+ORDER BY GoalsScored DESC
+WITH club, COLLECT({name: player.name, GoalsScored: GoalsScored})[0] AS BestStriker
+RETURN club.name AS Club_name, BestStriker.name AS Best_striker, BestStriker.GoalsScored as Goal_scored
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+MATCH (p:Player {last_name: "Chiesa"})<-[:COLLECT]-(a:Appearance)-[:APPEREAD_IN]->(g:Game)
+WITH p, a, g,
+  a.minutes_played as minutesPlayed,
+  datetime(p.date_of_birth) as dateOfBirth,
+  datetime(g.date) as gameDate
+WITH p, a, g, minutesPlayed, dateOfBirth, gameDate,
+  duration.between(dateOfBirth, gameDate).years AS ageAtAppearance
+WHERE ageAtAppearance <= 21
+RETURN p.name AS player_name, (g.date) as Date,(p.date_of_birth) as dateOfBirth, ageAtAppearance, minutesPlayed, gameDate
+

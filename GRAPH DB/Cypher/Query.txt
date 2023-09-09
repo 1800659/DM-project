@@ -11,11 +11,14 @@ Q2.
 MATCH (c:Club {ID: "131"})<-[:MEMBER_OF]-(p:Player)
 RETURN c.name AS Club_name, p.name AS Player_name
 
-Q3.
-/*return all match of a specific competition: Serie A*/
+Q3. 
+/*Retrieve all players that have never played champions league*/
+MATCH (p:Player)
+WHERE NOT EXISTS {
+  MATCH (p)<-[:COLLECT]-(a:Appearance)-[:APPEREAD_IN]->(g:Game)-[:PART_OF]->(:Competition {name: 'uefa-champions-league'})
+}
+RETURN p.name AS PlayerName
 
-MATCH (c:Competition {ID: "IT1"})<-[r:PART_OF]-(g:Game)
-RETURN g, c
 
 Q4.
 /*Count the number of appearences in the history of the db for each player */
@@ -40,7 +43,7 @@ RETURN distinct p.name AS player_name, c.name AS club_name
 Q7.
 /* for every defender return the number of red cards in their history */
 MATCH (p:Player {position: 'Defender'})<-[:COLLECT]-(a:Appearance)
-RETURN p.ID as Player_ID, p.name AS player_name, p.position AS player_position, COUNT(a.red_cards) AS RED_CARDS
+RETURN p.ID as Player_ID, p.name AS player_name, p.position AS player_position, SUM(TOINTEGER(a.red_cards)) AS RED_CARDS
 
 Q8.
 /* return the number of games for each clubs in the champions league */
@@ -107,6 +110,72 @@ WITH club, player, SUM(TOINTEGER(appearance.goals)) AS GoalsScored
 ORDER BY GoalsScored DESC
 WITH club, COLLECT({name: player.name, GoalsScored: GoalsScored})[0] AS BestStriker
 RETURN club.name AS Club_name, BestStriker.name AS Best_striker, BestStriker.GoalsScored as Goal_scored
+
+Q.15
+/* Find Clubs with the Most Goals Scored in Away Matches*/
+MATCH (c:Club)<-[:PARTECIPATE_IN]-(p:Partecipation)-[:REFERS_TO]->(g:Game)
+WHERE p.hosting = 'Away'
+RETURN c.name AS ClubName, SUM(TOINTEGER(p.own_goals)) AS GoalsScored
+ORDER BY GoalsScored DESC
+LIMIT 10
+
+Q.16
+/*Find the 10 most loyal players to clubs (player that have played more season with the same club wrt the others)
+MATCH (p:Player)<-[:COLLECT]-(a:Appearance)-[:APPEREAD_IN]->(g:Game)
+MATCH (club:Club {ID: a.player_club_id})
+WITH p, a, g, club, g.season AS Season
+WITH p, club, COLLECT(DISTINCT Season) AS Seasons
+WHERE SIZE(Seasons) >= 5
+RETURN p.name AS PlayerName, club.name AS ClubName, SIZE(Seasons) AS Seasons
+ORDER BY Seasons DESC
+LIMIT 10
+
+
+Q17.
+/*Find best defences for each competition*/
+MATCH (c:Club)<-[:PARTECIPATE_IN]-(p:Partecipation)-[:REFERS_TO]->(g:Game)-[:PART_OF]->(c1:Competition)
+WHERE p.opponent_goals = '0'
+RETURN c.name AS ClubName, c1.name as Competition_name, COUNT(g) AS Clean_sheets
+ORDER BY Clean_sheets DESC
+LIMIT 10
+
+Q18.
+/*finds pairs of different players who have played together more frequently in the same games*/
+
+MATCH (p1:Player)<-[:COLLECT]-(a1:Appearance)-[:APPEREAD_IN]->(g:Game),
+      (p2:Player)<-[:COLLECT]-(a2:Appearance)-[:APPEREAD_IN]->(g)
+WHERE p1 <> p2 AND p1 < p2  // Ensure p1 is alphabetically before p2 to get unique pairs
+WITH p1, p2, COUNT(DISTINCT g) AS SharedGames
+WHERE SharedGames >= 5
+RETURN p1.name AS Player1, p2.name AS Player2, SharedGames
+ORDER BY SharedGames DESC
+LIMIT 10
+
+Q19.
+/*finds pairs of different players who have played against more frequently*/
+MATCH (p1:Player)<-[:COLLECT]-(a1:Appearance)-[:APPEREAD_IN]->(g:Game),
+      (p2:Player)<-[:COLLECT]-(a2:Appearance)-[:APPEREAD_IN]->(g)
+WHERE p1 <> p2 AND a1.player_club_id <> a2.player_club_id AND p1 < p2
+WITH p1, p2, COUNT(DISTINCT g) AS SharedGames
+WHERE SharedGames >= 25
+RETURN p1.name AS Player1, p2.name AS Player2, SharedGames
+ORDER BY SharedGames DESC
+
+Q20.
+/*Find the Oldest Active Players in Each Position*/
+
+MATCH (p:Player)
+WHERE p.last_season = '2022'
+WITH p, datetime(p.date_of_birth) AS BirthDate
+WITH p, BirthDate, datetime().year - BirthDate.year AS Age
+WHERE Age >= 35
+RETURN p.name AS PlayerName, p.position AS Position, Age
+ORDER BY Age DESC, PlayerName DESC
+
+
+
+
+
 
 
 

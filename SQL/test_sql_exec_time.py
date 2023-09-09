@@ -78,11 +78,13 @@ with open("sql_query_results.html", "w") as html_file:
         start = time.time()
         cur.execute(query)
         conn.commit()
+        result = list(cur)
         end = time.time()
         execution_time = end - start
-        result = list(cur)
         num_records = len(result)  # Count the number of records
         counter += 1
+
+        print(f"Query {counter} completed. Execution time: {execution_time:.6f} seconds")
         
         html_file.write(f"<h2>Query {counter}: [Execution time: {execution_time:.6f} seconds]</h2>")
         html_file.write(f"<h2>{captions[counter-1]}</h2>")

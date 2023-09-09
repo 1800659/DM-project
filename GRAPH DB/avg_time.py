@@ -48,8 +48,9 @@ def execute_query(query):
             num_records = len(results_list)  # Count the number of records
 
             
-            return execution_time, results_list, num_records
+            return total_time, results_list, num_records
         
 for i, query in enumerate(queries):
     execution_time, result, num_records = execute_query(query)
-    print(f"Query {i+1} completed. Average execution time: {execution_time:.6f} seconds")
+    avg_time = execution_time/1000
+    print(f"Query {i+1} completed. average execution time: {execution_time:.6f} seconds")

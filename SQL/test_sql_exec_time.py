@@ -5,7 +5,7 @@ import sys
 try:
     conn = mariadb.connect(
         user="root",
-        password="1611cris",
+        password="password",
         host="127.0.0.1",
         port=3306,
         database="transfermarkt"
@@ -88,6 +88,8 @@ with open("sql_query_results.html", "w") as html_file:
         
         html_file.write(f"<h2>Query {counter}: [Execution time: {execution_time:.6f} seconds]</h2>")
         html_file.write(f"<h2>{captions[counter-1]}</h2>")
+        html_file.write(f"<button onclick=\"toggleQuery({counter-1})\">Toggle Query</button>")
+        html_file.write(f"<div id=\"query{counter-1}\" style=\"display: none;\">{arr_string[counter-1]}</div>")
         html_file.write(f"<p>Number of Records: {num_records}</p>")  # Display the number of records
 
         html_file.write("<button onclick=\"toggleQueryResults(" + str(counter) + ")\">Toggle Results</button>")
@@ -117,6 +119,14 @@ with open("sql_query_results.html", "w") as html_file:
     html_file.write("    queryResultsDiv.style.display = 'block';")
     html_file.write("  } else {")
     html_file.write("    queryResultsDiv.style.display = 'none';")
+    html_file.write("  }")
+    html_file.write("}")
+    html_file.write("function toggleQuery(queryIndex) {")
+    html_file.write("  var queryDiv = document.getElementById(`query${queryIndex}`);")
+    html_file.write("  if (queryDiv.style.display === 'none') {")
+    html_file.write("    queryDiv.style.display = 'block';")
+    html_file.write("  } else {")
+    html_file.write("    queryDiv.style.display = 'none';")
     html_file.write("  }")
     html_file.write("}")
     html_file.write("</script>")

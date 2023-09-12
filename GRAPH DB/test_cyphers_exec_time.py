@@ -94,6 +94,8 @@ with open("cypher_query_results.html", "w") as html_file:
         # Display the query description
         html_file.write(f"<h2>Query {i+1}: [Execution time: {execution_time:.6f} seconds]</h2>")
         html_file.write(f"<h2>{captions[i]}</h2>")
+        html_file.write(f"<button onclick=\"toggleQuery({i})\">Toggle Query</button>")
+        html_file.write(f"<div id=\"query{i}\" style=\"display: none;\">{queries[i]}</div>")
         html_file.write(f"<p>Number of Records: {num_records}</p>")  # Display the number of records
         
         # Add a button to show/hide this query's results
@@ -130,6 +132,14 @@ with open("cypher_query_results.html", "w") as html_file:
     html_file.write("    queryResultsDiv.style.display = 'block';")
     html_file.write("  } else {")
     html_file.write("    queryResultsDiv.style.display = 'none';")
+    html_file.write("  }")
+    html_file.write("}")
+    html_file.write("function toggleQuery(queryIndex) {")
+    html_file.write("  var queryDiv = document.getElementById(`query${queryIndex}`);")
+    html_file.write("  if (queryDiv.style.display === 'none') {")
+    html_file.write("    queryDiv.style.display = 'block';")
+    html_file.write("  } else {")
+    html_file.write("    queryDiv.style.display = 'none';")
     html_file.write("  }")
     html_file.write("}")
     html_file.write("</script>")

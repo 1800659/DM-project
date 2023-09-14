@@ -4,11 +4,11 @@ This project was developed as part of the Data Management course (University "La
 
 >Student: Francesco Fortunato, 1848527
 >
->Student: Cristian Santaroni, 1800659.
+>Student: Cristian Santaroni, 1800659
 
 ## Project Scope
 
-The primary focus of this project was to measure and compare the performance of two distinct database management systems: a relational database management system (MariaDB) and a graph database management system (Neo4j). To achieve this, we selected and executed a set of 20 queries to evaluate their execution times on both database systems.
+The primary focus of this project was to measure and compare the performance of two distinct database management systems: a relational database management system (**MariaDB**) and a graph database management system (**Neo4j**). To achieve this, we selected and executed a set of 20 queries to evaluate their execution times on both database systems.
 
 ## Project Components
 
@@ -18,17 +18,12 @@ We chose a comprehensive and structured football dataset sourced from Transferma
 
 ### Database Systems:
 
-- MariaDB: Selected as our relational database management system.
-- Neo4j: Chosen as our graph database management system.
+- **MariaDB**: Selected as our relational database management system.
+- **Neo4j**: Chosen as our graph database management system.
 
 ### Query Execution and Performance Evaluation:
 
-We designed Python scripts to execute the selected queries on both MariaDB and Neo4j and to calculate the average execution time. These scripts measured the execution time of each query and stored the results for analysis. The performance of both database systems was evaluated based on query execution times.
-
-### Performance Evaluation Results:
-
-The project produced the performance evaluation results for each query, comparing MariaDB and Neo4j.
-These results were presented in the project slides and are available for reference.
+We designed Python scripts to execute the selected queries on both MariaDB and Neo4j and to calculate the average execution time. These scripts measured the execution time of each query and stored the results for analysis. The performance of both database systems was evaluated based on query execution times. The results were presented in the project slides and are available for reference.
 
 ## Project Presentation
 
